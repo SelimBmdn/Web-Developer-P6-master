@@ -1,11 +1,12 @@
 const Thing = require('../models/Thing');
 
+
 const fs = require('fs');
 
 exports.createThing = (req, res, next) => {
-    const thingObject = JSON.parse(req.body.thing);
-    delete thingObject._id;
-    delete thingObject._userId;
+    const thingObject = JSON.parse(req.body.thing)
+    delete thingObject._id
+    delete thingObject._userId
     const thing = new Thing({
         ...thingObject,
         userId: req.auth.userId,
@@ -68,4 +69,10 @@ exports.getAllThings = (req, res, next) => {
     Thing.find()
     .then(things => res.status(200).json(things))
     .catch(error => res.status(400).json({ error }))
+  };
+
+  exports.likeThing = (req, res, next) => {
+    console.log("like ok route")
+   /* .then(things => res.status(200).json(things))
+    .catch(error => res.status(400).json({ error }))*/
   };
