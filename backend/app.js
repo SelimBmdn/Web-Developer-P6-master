@@ -10,6 +10,9 @@ const stuffRoutes = require ('./routes/sauces');
 const userRoutes = require ('./routes/user');
 
 require('dotenv').config() ;
+const helmet = require("helmet");
+
+app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
 
 app.use(express.json());
 

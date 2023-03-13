@@ -76,74 +76,57 @@ exports.getAllSauces = (req, res, next) => {
 exports.likeSauce = (req, res, next) => {
 
     Sauce.findOne({ _id: req.params.id })
-        .then((sauces) => {
+        .then((sauce) => {
             console.log("--->CONTENU resultat promise : sauces");
-            console.log(sauces);
 
-// ----------like = 1 (likes +1)
-            if (!sauces.usersLiked.includes(req.body.userId) && req.body.like === 1) {
-                console.log("les instructions seront éxecuté")
+            let usersLiked = sauce.usersLiked
+            let usersDisliked = sauce.usersDisliked
+            const userId = req.body.userId
 
-                User.updateOne(
-                    { _id: req.params.id },
-                    {
-                        $inc: { likes: 1 },
-                        $push: { usersLiked: req.body.userId }
+            switch (req.body.like) {
+                case 1:
+                    if (!usersLiked.includes(userId)) {
+                        usersLiked.push(userId)
                     }
-                )
-                    .then(() => res.status(201).json({ message: "User like +1" }))
-                    .catch(error => res.status(400).json({ error }));
-            };
-            
-
-//---------------like =0 (likes = 0, pas de vote)
-            if (sauces.usersLiked.includes(req.body.userId) && req.body.like === 1) {
-                console.log("userId est dans userliked ET like =0")
-
-                User.updateOne(
-                    { _id: req.params.id },
-                    {
-                        $inc: { likes: -1 },
-                        $pull: { usersLiked: req.body.userId }
+                    if (usersDisliked.includes(userId)) {
+                        usersDisliked.remove(userId)
                     }
-                )
-                    .then(() => res.status(201).json({ message: "User like 0" }))
-                    .catch(error => res.status(400).json({ error }));
+                    break
+                case 0:
+                    if (usersLiked.includes(userId)) {
+                        usersLiked.remove(userId)
+                    }
+                    if (usersDisliked.includes(userId)) {
+                        usersDisliked.remove(userId)
+                    }
+                    break
+                case -1:
+                    if (usersLiked.includes(userId)) {
+                        usersLiked.remove(userId)
+                    }
+                    if (!usersDisliked.includes(userId)) {
+                        usersDisliked.push(userId)
+                    }
+                    break
+                default:
+                    return res.status(400).json({ error: "Bad request" })
 
             }
 
-//----------- like = -1 (dislikes = +1)
+            // tableaux a jours 
+            console.log(usersDisliked, usersLiked, req.params.id)
+            Sauce.updateOne(
+                { _id: req.params.id },
+                {
+                    usersLiked: usersLiked,
+                    usersDisliked: usersDisliked,
+                    likes: usersLiked.length,
+                    dislikes: usersDisliked.length,
+                }
+            )
+                .then(() => res.status(201).json({ message: "User MAJ" }))
+                .catch(error => res.status(400).json({ error }))
 
-            if (!sauces.usersLiked.includes(req.body.userId) && req.body.like === -1) {
-                console.log("userId est dans userDisliked ET dislikes = 0")
-
-                User.updateOne(
-                    { _id: req.params.id },
-                    {
-                        $inc: { dislikes: 1 },
-                        $push: { usersDisliked: req.body.userId }
-                    }
-                )
-                    .then(() => res.status(201).json({ message: "User dislike +1" }))
-                    .catch(error => res.status(400).json({ error }));
-
-            }
-
-            // aprés un like = -1 on met un like = 0 (likes = 0 , pas des votes, on enleve le dislikes)
-            if (sauces.usersDisliked.includes(req.body.userId) && req.body.like === 0) {
-                console.log("userId est dans userDisliked ET like =0")
-
-                User.updateOne(
-                    { _id: req.params.id },
-                    {
-                        $inc: { dislikes: -1 },
-                        $pull: { usersDisliked: req.body.userId }
-                    }
-                )
-                    .then(() => res.status(201).json({ message: "User like 0" }))
-                    .catch(error => res.status(400).json({ error }));
-
-            }
         })
         .catch(error => res.status(400).json({ error }));
 
