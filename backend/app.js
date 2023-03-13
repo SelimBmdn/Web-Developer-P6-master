@@ -35,3 +35,6 @@ mongoose.connect(process.env.MONGODB_URL,
     useUnifiedTopology: true })
   .then(() => console.log('Connexion à MongoDB réussie !'))
   .catch(() => console.log('Connexion à MongoDB échouée !'));
+
+  //mongoose.set('strictQuery', true);mongoose.set('strictQuery', true);
+  //mongoose.set('strictQuery', false);

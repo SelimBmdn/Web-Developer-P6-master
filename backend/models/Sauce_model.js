@@ -12,11 +12,10 @@ const sauceSchema = mongoose.Schema({
     likes: { default: 0 ,type: Number, required: true},
     dislikes: { default: 0 ,type: Number, required: true},
     
-    usersLiked : { type: [], required: true},
-    usersDisliked : { type: [], required: true},
+    usersLiked : { type: [], required: true, default: []},
+    usersDisliked : { type: [], required: true, default: []},
     
 });
-
 /*
 const mongoose = require('mongoose');
 
