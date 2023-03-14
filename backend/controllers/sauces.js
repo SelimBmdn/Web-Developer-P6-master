@@ -72,7 +72,6 @@ exports.getAllSauces = (req, res, next) => {
         .catch(error => res.status(400).json({ error }))
 };
 
-
 exports.likeSauce = (req, res, next) => {
 
     Sauce.findOne({ _id: req.params.id })
