@@ -76,11 +76,11 @@ exports.likeSauce = (req, res, next) => {
 
     Sauce.findOne({ _id: req.params.id })
         .then((sauce) => {
-            console.log("--->CONTENU resultat promise : sauces");
+            //console.log("--->CONTENU resultat promise : sauces");
 
             let usersLiked = sauce.usersLiked
             let usersDisliked = sauce.usersDisliked
-            const userId = req.body.userId
+            const userId = req.auth.userId
 
             switch (req.body.like) {
                 case 1:
@@ -111,9 +111,8 @@ exports.likeSauce = (req, res, next) => {
                     return res.status(400).json({ error: "Bad request" })
 
             }
-
             // tableaux a jours 
-            console.log(usersDisliked, usersLiked, req.params.id)
+            //console.log(usersDisliked, usersLiked, req.params.id)
             Sauce.updateOne(
                 { _id: req.params.id },
                 {
